@@ -42,12 +42,6 @@ function sanitizeFilename(str) {
     return str.replace(/[^a-z0-9-]/gi, '-').toLowerCase().substring(0, 50);
 }
 
-function isPolish(text) {
-    if (!text) return false;
-    if (/[ąćęłńóśżźĄĆĘŁŃÓŚŻŹ]/.test(text)) return true;
-    return /\b(i|oraz|pracownik|firma|wynagrodzenie|szukamy|zatrudnimy)\b/i.test(text);
-}
-
 function createSpinner(text) {
     const spinner = cliSpinners.dots;
     let i = 0;
@@ -99,14 +93,14 @@ function createProgressBar(total) {
     };
 }
 
-async function queryOllama(prompt, language, retries = 3) {
-    const spinner = createSpinner(`Generating CV (${language})...`);
+async function queryOllama(prompt, retries = 3) {
+    const spinner = createSpinner('Generating CV...');
 
     try {
         const messages = [
             {
                 role: "system",
-                content: `You are a professional CV customizer. Modify ONLY existing sections. Keep the exact same format. CV in ${language === 'polish' ? 'Polish' : 'English'}`
+                content: "You are a professional CV customizer. Create a well-formatted CV in English. Focus on experience, skills and projects related to the job requirements. Use clear sections and professional language."
             },
             {
                 role: "user",
@@ -200,88 +194,93 @@ async function getJoobleJobs(params) {
     }
 }
 
-// 🔥 Build CV text from profile
+// Build CV text from profile
 function profileToCV(profile) {
-    let cv = `Name: ${profile.name}\nEmail: ${profile.email}\nPhone: ${profile.phone}\n\n`;
-    cv += `Professional Summary:\n${profile.summary}\n\n`;
+    let cv = `PROFESSIONAL PROFILE\n`;
+    cv += `Name: ${profile.name || 'Not specified'}\n`;
+    cv += `Email: ${profile.email || 'Not specified'}\n`;
+    cv += `Phone: ${profile.phone || 'Not specified'}\n\n`;
+    
+    cv += `SUMMARY\n`;
+    cv += `${profile.summary || 'Experienced professional seeking new opportunities.'}\n\n`;
 
     if (profile.experiences?.length) {
-        cv += `Work Experience:\n`;
+        cv += `WORK EXPERIENCE\n`;
         profile.experiences.forEach(exp => {
-            cv += `- ${exp.position} at ${exp.company} (${exp.startDate} - ${exp.endDate})\n`;
-            if (exp.description) cv += `  ${exp.description}\n`;
+            cv += `${exp.position || 'Position'} at ${exp.company || 'Company'}\n`;
+            cv += `${exp.startDate || 'Start'} - ${exp.endDate || 'Present'}\n`;
+            if (exp.description) cv += `${exp.description}\n`;
+            cv += `\n`;
         });
-        cv += `\n`;
     }
 
     if (profile.education?.length) {
-        cv += `Education:\n`;
+        cv += `EDUCATION\n`;
         profile.education.forEach(edu => {
-            cv += `- ${edu.degree} in ${edu.field} at ${edu.school} (${edu.startDate} - ${edu.endDate})\n`;
+            cv += `${edu.degree || 'Degree'} in ${edu.field || 'Field'} at ${edu.school || 'School'}\n`;
+            cv += `${edu.startDate || 'Start'} - ${edu.endDate || 'Graduated'}\n\n`;
         });
-        cv += `\n`;
     }
 
     if (profile.skills?.length) {
-        cv += `Skills:\n${profile.skills.join(', ')}\n\n`;
+        cv += `SKILLS & COMPETENCIES\n`;
+        cv += `${profile.skills.join(', ')}\n\n`;
     }
 
     return cv;
 }
 
-function getTemplateBase({ profile, customTemplate, job }) {
-    if (profile) {
-        console.log(chalk.blue('Using profile data as base CV'));
-        return profileToCV(profile);
+async function generateCV(job, profile) {
+    console.log(chalk.blue(`Processing: ${job.title} at ${job.company}`));
+
+    const baseCV = profileToCV(profile);
+    
+    const prompt = `Create a professional CV tailored for this specific job opportunity. Use the candidate's profile information below and emphasize the skills and experiences most relevant to this position.
+
+JOB OPPORTUNITY:
+Position: ${job.title || 'Not specified'}
+Company: ${job.company || 'Not specified'}
+Location: ${job.location || 'Not specified'}
+Requirements: ${job.snippet || 'No specific requirements provided'}
+
+CANDIDATE PROFILE:
+${baseCV}
+
+IMPORTANT: Create a well-formatted CV in English. Focus on the most relevant experiences and skills for this specific job. Use clear section headers and professional language.`;
+
+    const generatedCV = await queryOllama(prompt);
+
+    // Ensure CV directory exists
+    if (!fs.existsSync(CV_DIR)) {
+        fs.mkdirSync(CV_DIR, { recursive: true });
     }
-    if (customTemplate) {
-        console.log(chalk.blue('Using custom template'));
-        return customTemplate;
-    }
-
-    const polishJob = isPolish(job.snippet);
-    const templatePath = path.join(
-        __dirname,
-        'templates',
-        polishJob ? 'polishCV.txt' : 'englishCV.txt'
-    );
-
-    return fs.readFileSync(templatePath, 'utf-8');
-}
-
-async function generateCV(job, options = {}) {
-    const { profile, customTemplate, templateName } = options;
-    const polishJob = isPolish(job.snippet);
-    const base = getTemplateBase({ profile, customTemplate, job });
-    const language = polishJob ? 'polish' : 'english';
-
-    console.log(chalk.blue(`Processing: ${job.title} at ${job.company} (${polishJob ? 'PL' : 'EN'})`));
-
-    if (customTemplate && templateName) {
-        const templateFilename = `${sanitizeFilename(templateName)}.txt`;
-        const templatePath = path.join(CUSTOM_TEMPLATES_DIR, templateFilename);
-        fs.writeFileSync(templatePath, customTemplate);
-        console.log(chalk.blue(`Custom template saved: ${templateFilename}`));
-    }
-
-    const prompt = polishJob
-        ? `Dostosuj ponizsze CV do oferty pracy. Skup sie na doswiadczeniu, umiejetnosciach i projektach zwiazanych z wymaganiami. Zachowaj dokladnie ten sam format. CV w jezyku polskim.\n\nOFERTA PRACY:\nStanowisko: ${job.title}\nFirma: ${job.company}\nLokalizacja: ${job.location}\nWymagania: ${job.snippet}\n\nCV DO DOSTOSOWANIA:\n${base}`
-        : `Customize the following CV for this job offer. Focus on experience, skills and projects related to the requirements. Keep exactly the same format. CV in English.\n\nJOB OFFER:\nPosition: ${job.title}\nCompany: ${job.company}\nLocation: ${job.location}\nRequirements: ${job.snippet}\n\nCV TO CUSTOMIZE:\n${base}`;
-
-    const generatedCV = await queryOllama(prompt, language);
 
     const txtFilename = `cv_${sanitizeFilename(job.company || job.title)}_${Date.now()}.txt`;
     const pdfFilename = txtFilename.replace('.txt', '.pdf');
 
+    // Save text version
     fs.writeFileSync(path.join(CV_DIR, txtFilename), generatedCV);
-    await generatePDF(generatedCV, path.join(CV_DIR, pdfFilename));
+    
+    // Generate PDF
+    try {
+        await generatePDF(generatedCV, path.join(CV_DIR, pdfFilename));
+        console.log(chalk.green(`PDF generated: ${pdfFilename}`));
+    } catch (err) {
+        console.log(chalk.yellow(`PDF generation failed: ${err.message}, using text version only`));
+        // If PDF generation fails, we'll still return the text version
+    }
 
-    return { ...job, cv: generatedCV, cv_filename: pdfFilename, cv_txt: txtFilename };
+    return { 
+        ...job, 
+        cv: generatedCV, 
+        cv_filename: pdfFilename, 
+        cv_txt: txtFilename 
+    };
 }
 
 // -------------------- Endpoints --------------------
 
-// Templates endpoints
+// Templates endpoints (optional - for future use)
 app.get('/templates', (req, res) => {
     try {
         const templates = {};
@@ -335,13 +334,19 @@ app.delete('/templates/:name', (req, res) => {
     }
 });
 
-// Search endpoint
+// Main search endpoint
 app.post('/search', async (req, res) => {
     try {
-        const { query, location, profile, customTemplate, templateName } = req.body;
+        const { query, location, profile } = req.body;
+        
         if (!query) {
             console.log(chalk.red('Query is required'));
             return res.status(400).json({ error: 'Query is required' });
+        }
+        
+        if (!profile || !profile.name) {
+            console.log(chalk.red('Profile information is required'));
+            return res.status(400).json({ error: 'Please complete your profile first' });
         }
 
         console.log(chalk.cyan('\nStarting job search...'));
@@ -358,7 +363,7 @@ app.post('/search', async (req, res) => {
 
         for (const job of jobs) {
             try {
-                const result = await generateCV(job, { profile, customTemplate, templateName });
+                const result = await generateCV(job, profile);
                 results.push(result);
             } catch (err) {
                 console.log(chalk.yellow(`Skipping job due to error: ${err.message}`));
