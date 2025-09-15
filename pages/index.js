@@ -1,24 +1,41 @@
 import { useState, useEffect } from 'react';
+//import '../styles/styles.css';
 
 export default function Home() {
   const [query, setQuery] = useState('');
   const [location, setLocation] = useState('');
-  const [tech, setTech] = useState('Node.js');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [showTemplateBuilder, setShowTemplateBuilder] = useState(false);
-  const [customTemplate, setCustomTemplate] = useState('');
-  const [templateName, setTemplateName] = useState('');
-  const [savedTemplates, setSavedTemplates] = useState({});
+  const [showProfileBuilder, setShowProfileBuilder] = useState(false);
+  
+  // Profile state
+  const [profile, setProfile] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    summary: '',
+    experiences: [{ company: '', position: '', startDate: '', endDate: '', description: '' }],
+    education: [{ school: '', degree: '', field: '', startDate: '', endDate: '' }],
+    skills: []
+  });
 
-  // Load templates from localStorage on client side only
+  // Load profile from localStorage on client side
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const templates = JSON.parse(localStorage.getItem('cvTemplates') || '{}');
-      setSavedTemplates(templates);
+      const savedProfile = localStorage.getItem('cvProfile');
+      if (savedProfile) {
+        setProfile(JSON.parse(savedProfile));
+      }
     }
   }, []);
+
+  // Save profile to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('cvProfile', JSON.stringify(profile));
+    }
+  }, [profile]);
 
   async function handleSearch(e) {
     e.preventDefault();
@@ -29,10 +46,9 @@ export default function Home() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          query: `${query} ${tech}`, 
+          query, 
           location,
-          customTemplate: customTemplate || null,
-          templateName: templateName || null
+          profile // Send the complete profile to the backend
         })
       });
       const data = await res.json();
@@ -45,124 +61,329 @@ export default function Home() {
     }
   }
 
-  function handleSaveTemplate() {
-    if (!customTemplate.trim() || !templateName.trim()) {
-      setError('Template name and content are required');
-      return;
-    }
-    
-    // Save to localStorage
-    if (typeof window !== 'undefined') {
-      const templates = JSON.parse(localStorage.getItem('cvTemplates') || '{}');
-      templates[templateName] = customTemplate;
-      localStorage.setItem('cvTemplates', JSON.stringify(templates));
-      setSavedTemplates(templates);
-    }
-    
-    setError('Template saved successfully!');
-    setTimeout(() => setError(null), 2000);
-  }
+  // Experience handlers
+  const addExperience = () => {
+    setProfile({
+      ...profile,
+      experiences: [...profile.experiences, { company: '', position: '', startDate: '', endDate: '', description: '' }]
+    });
+  };
 
-  function handleLoadTemplate(name) {
-    if (savedTemplates[name]) {
-      setCustomTemplate(savedTemplates[name]);
-      setTemplateName(name);
-    }
-  }
+  const updateExperience = (index, field, value) => {
+    const updatedExperiences = [...profile.experiences];
+    updatedExperiences[index][field] = value;
+    setProfile({ ...profile, experiences: updatedExperiences });
+  };
 
-  function handleDeleteTemplate(name) {
-    if (typeof window !== 'undefined') {
-      const templates = {...savedTemplates};
-      delete templates[name];
-      localStorage.setItem('cvTemplates', JSON.stringify(templates));
-      setSavedTemplates(templates);
-      
-      if (templateName === name) {
-        setCustomTemplate('');
-        setTemplateName('');
-      }
+  const removeExperience = (index) => {
+    const updatedExperiences = profile.experiences.filter((_, i) => i !== index);
+    setProfile({ ...profile, experiences: updatedExperiences });
+  };
+
+  // Education handlers
+  const addEducation = () => {
+    setProfile({
+      ...profile,
+      education: [...profile.education, { school: '', degree: '', field: '', startDate: '', endDate: '' }]
+    });
+  };
+
+  const updateEducation = (index, field, value) => {
+    const updatedEducation = [...profile.education];
+    updatedEducation[index][field] = value;
+    setProfile({ ...profile, education: updatedEducation });
+  };
+
+  const removeEducation = (index) => {
+    const updatedEducation = profile.education.filter((_, i) => i !== index);
+    setProfile({ ...profile, education: updatedEducation });
+  };
+
+  // Skills handlers
+  const addSkill = (e) => {
+    if (e.key === 'Enter' && e.target.value.trim()) {
+      setProfile({
+        ...profile,
+        skills: [...profile.skills, e.target.value.trim()]
+      });
+      e.target.value = '';
     }
-  }
+  };
+
+  const removeSkill = (index) => {
+    const updatedSkills = profile.skills.filter((_, i) => i !== index);
+    setProfile({ ...profile, skills: updatedSkills });
+  };
 
   return (
-    <div style={{ fontFamily: 'system-ui, sans-serif', padding: 24 }}>
-      <h1 style={{ fontSize: 24, marginBottom: 12 }}>CV Generator</h1>
-      
-      <button 
-        onClick={() => setShowTemplateBuilder(!showTemplateBuilder)}
-        style={{ marginBottom: 16, padding: '8px 12px', background: '#f0f0f0', border: '1px solid #ccc' }}
-      >
-        {showTemplateBuilder ? 'Hide Template Builder' : 'Build Custom Template'}
-      </button>
+  <div className="app-container">
+    <h1 className="app-title">CV Generator</h1>
 
-      {showTemplateBuilder && (
-        <div style={{ marginBottom: 24, padding: 16, border: '1px solid #eee', borderRadius: 8 }}>
-          <h3 style={{ marginBottom: 12 }}>Custom Template Builder</h3>
-          
-          <div style={{ marginBottom: 12 }}>
-            <input 
-              placeholder="Template Name" 
-              value={templateName} 
-              onChange={(e) => setTemplateName(e.target.value)}
-              style={{ padding: 8, width: '100%', marginBottom: 8 }}
-            />
-            <textarea 
-              placeholder="Enter your custom CV template here. Use placeholders like {name}, {experience}, etc."
-              value={customTemplate} 
-              onChange={(e) => setCustomTemplate(e.target.value)}
-              rows={10}
-              style={{ padding: 8, width: '100%', fontFamily: 'monospace' }}
-            />
-          </div>
-          
-          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-            <button onClick={handleSaveTemplate} style={{ padding: '8px 12px' }}>
-              Save Template
-            </button>
-          </div>
-          
-          {Object.keys(savedTemplates).length > 0 && (
+    <button 
+      onClick={() => setShowProfileBuilder(!showProfileBuilder)}
+      className="toggle-button"
+    >
+      {showProfileBuilder ? 'Hide Profile Builder' : 'Build Your Profile'}
+    </button>
+
+    {showProfileBuilder && (
+      <div className="profile-builder">
+        <h2 className="section-title">Your Professional Profile</h2>
+        
+        {/* Personal Information */}
+        <div className="section">
+          <h3>Personal Information</h3>
+          <div className="two-col-grid">
             <div>
-              <h4>Saved Templates:</h4>
-              {Object.entries(savedTemplates).map(([name, content]) => (
-                <div key={name} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                  <span>{name}</span>
-                  <button onClick={() => handleLoadTemplate(name)} style={{ padding: '4px 8px', fontSize: 12 }}>
-                    Load
-                  </button>
-                  <button onClick={() => handleDeleteTemplate(name)} style={{ padding: '4px 8px', fontSize: 12, background: '#ffcccc' }}>
-                    Delete
-                  </button>
-                </div>
-              ))}
+              <label>Full Name</label>
+              <input 
+                value={profile.name} 
+                onChange={(e) => setProfile({...profile, name: e.target.value})}
+                className="input"
+                placeholder="John Doe"
+              />
             </div>
-          )}
+            <div>
+              <label>Email</label>
+              <input 
+                value={profile.email} 
+                onChange={(e) => setProfile({...profile, email: e.target.value})}
+                className="input"
+                placeholder="john@example.com"
+              />
+            </div>
+          </div>
+          <div>
+            <label>Phone</label>
+            <input 
+              value={profile.phone} 
+              onChange={(e) => setProfile({...profile, phone: e.target.value})}
+              className="input"
+              placeholder="+1 234 567 890"
+            />
+          </div>
+          <div>
+            <label>Professional Summary</label>
+            <textarea 
+              value={profile.summary} 
+              onChange={(e) => setProfile({...profile, summary: e.target.value})}
+              className="textarea"
+              placeholder="Experienced software developer with 5+ years in web development..."
+            />
+          </div>
         </div>
-      )}
 
-      <form onSubmit={handleSearch} style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-        <input placeholder="Job title" value={query} onChange={(e) => setQuery(e.target.value)} style={{ padding: 8 }} />
-        <input placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} style={{ padding: 8 }} />
-        <select value={tech} onChange={(e) => setTech(e.target.value)} style={{ padding: 8 }}>
-          <option>Node.js</option>
-          <option>React</option>
-          <option>Python</option>
-          <option>C++</option>
-        </select>
-        <button style={{ padding: '8px 12px' }}>{loading ? 'Working...' : 'Search & Generate'}</button>
-      </form>
+        {/* Work Experience */}
+        <div className="section">
+          <h3>Work Experience</h3>
+          {profile.experiences.map((exp, index) => (
+            <div key={index} className="card">
+              <div className="two-col-grid">
+                <div>
+                  <label>Company</label>
+                  <input 
+                    value={exp.company} 
+                    onChange={(e) => updateExperience(index, 'company', e.target.value)}
+                    className="input"
+                    placeholder="Google"
+                  />
+                </div>
+                <div>
+                  <label>Position</label>
+                  <input 
+                    value={exp.position} 
+                    onChange={(e) => updateExperience(index, 'position', e.target.value)}
+                    className="input"
+                    placeholder="Senior Developer"
+                  />
+                </div>
+              </div>
+              <div className="two-col-grid">
+                <div>
+                  <label>Start Date</label>
+                  <input 
+                    type="date"
+                    value={exp.startDate} 
+                    onChange={(e) => updateExperience(index, 'startDate', e.target.value)}
+                    className="input"
+                  />
+                </div>
+                <div>
+                  <label>End Date</label>
+                  <input 
+                    type="date"
+                    value={exp.endDate} 
+                    onChange={(e) => updateExperience(index, 'endDate', e.target.value)}
+                    className="input"
+                  />
+                </div>
+              </div>
+              <div>
+                <label>Description</label>
+                <textarea 
+                  value={exp.description} 
+                  onChange={(e) => updateExperience(index, 'description', e.target.value)}
+                  className="textarea"
+                  placeholder="Responsibilities and achievements in this role..."
+                />
+              </div>
+              <button 
+                onClick={() => removeExperience(index)}
+                className="remove-button"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button onClick={addExperience} className="secondary-button">
+            + Add Experience
+          </button>
+        </div>
 
-      {error && <div style={{ color: error.includes('successfully') ? 'green' : 'red', marginBottom: 16 }}>{error}</div>}
+        {/* Education */}
+        <div className="section">
+          <h3>Education</h3>
+          {profile.education.map((edu, index) => (
+            <div key={index} className="card">
+              <div>
+                <label>School/University</label>
+                <input 
+                  value={edu.school} 
+                  onChange={(e) => updateEducation(index, 'school', e.target.value)}
+                  className="input"
+                  placeholder="Stanford University"
+                />
+              </div>
+              <div className="two-col-grid">
+                <div>
+                  <label>Degree</label>
+                  <input 
+                    value={edu.degree} 
+                    onChange={(e) => updateEducation(index, 'degree', e.target.value)}
+                    className="input"
+                    placeholder="Bachelor's"
+                  />
+                </div>
+                <div>
+                  <label>Field of Study</label>
+                  <input 
+                    value={edu.field} 
+                    onChange={(e) => updateEducation(index, 'field', e.target.value)}
+                    className="input"
+                    placeholder="Computer Science"
+                  />
+                </div>
+              </div>
+              <div className="two-col-grid">
+                <div>
+                  <label>Start Date</label>
+                  <input 
+                    type="date"
+                    value={edu.startDate} 
+                    onChange={(e) => updateEducation(index, 'startDate', e.target.value)}
+                    className="input"
+                  />
+                </div>
+                <div>
+                  <label>End Date</label>
+                  <input 
+                    type="date"
+                    value={edu.endDate} 
+                    onChange={(e) => updateEducation(index, 'endDate', e.target.value)}
+                    className="input"
+                  />
+                </div>
+              </div>
+              <button 
+                onClick={() => removeEducation(index)}
+                className="remove-button"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button onClick={addEducation} className="secondary-button">
+            + Add Education
+          </button>
+        </div>
 
-      <ul>
+        {/* Skills */}
+        <div className="section">
+          <h3>Skills</h3>
+          <div>
+            <label>Add Skill (Press Enter)</label>
+            <input 
+              onKeyPress={addSkill}
+              className="input"
+              placeholder="JavaScript, React, Node.js..."
+            />
+          </div>
+          <div className="skills-list">
+            {profile.skills.map((skill, index) => (
+              <div key={index} className="skill-tag">
+                {skill}
+                <button 
+                  onClick={() => removeSkill(index)}
+                  className="remove-skill"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+
+    <form onSubmit={handleSearch} className="search-form">
+      <input 
+        placeholder="Job title" 
+        value={query} 
+        onChange={(e) => setQuery(e.target.value)} 
+        className="input"
+      />
+      <input 
+        placeholder="Location" 
+        value={location} 
+        onChange={(e) => setLocation(e.target.value)} 
+        className="input"
+      />
+      <button 
+        className="primary-button"
+        disabled={loading || !profile.name}
+      >
+        {loading ? 'Generating CVs...' : 'Search & Generate CVs'}
+      </button>
+    </form>
+
+    {!profile.name && (
+      <div className="warning">
+        Please build your profile first before generating CVs.
+      </div>
+    )}
+
+    {error && <div className="error">{error}</div>}
+
+    <div>
+      <h3>Generated CVs ({results.length})</h3>
+      <ul className="results-list">
         {results.map((job, i) => (
-          <li key={i} style={{ marginBottom: 12 }}>
+          <li key={i} className="result-card">
             <div><strong>{job.title}</strong> @ {job.company}</div>
             <div>{job.location}</div>
-            <a href={`/cvs/${job.cv_filename}`} target="_blank" rel="noreferrer">Download PDF</a>
+            <a 
+              href={`/cvs/${job.cv_filename}`} 
+              target="_blank" 
+              rel="noreferrer" 
+              className="download-link"
+            >
+              Download PDF
+            </a>
           </li>
         ))}
       </ul>
     </div>
-  );
+  </div>
+);
+
 }

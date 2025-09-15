@@ -37,7 +37,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// Helpers
+// -------------------- Helpers --------------------
 function sanitizeFilename(str) {
     return str.replace(/[^a-z0-9-]/gi, '-').toLowerCase().substring(0, 50);
 }
@@ -162,7 +162,7 @@ async function getJoobleJobs(params) {
 
     try {
         const response = await axios.post(`${JOOBLE_API_URL}/${apiKey}`, {
-            keywords: `"${params.query}"`, // enforce exact match
+            keywords: `"${params.query}"`,
             location: params.location || '',
             radius: "40",
             page: "1",
@@ -181,7 +181,6 @@ async function getJoobleJobs(params) {
             if (seen.has(key)) return false;
             seen.add(key);
 
-            // strict filtering: title or snippet must include the query
             const q = params.query.toLowerCase();
             return job.title?.toLowerCase().includes(q) || job.snippet?.toLowerCase().includes(q);
         }).map(job => ({
@@ -201,30 +200,63 @@ async function getJoobleJobs(params) {
     }
 }
 
-function getTemplateBase(customTemplate, job) {
+// 🔥 Build CV text from profile
+function profileToCV(profile) {
+    let cv = `Name: ${profile.name}\nEmail: ${profile.email}\nPhone: ${profile.phone}\n\n`;
+    cv += `Professional Summary:\n${profile.summary}\n\n`;
+
+    if (profile.experiences?.length) {
+        cv += `Work Experience:\n`;
+        profile.experiences.forEach(exp => {
+            cv += `- ${exp.position} at ${exp.company} (${exp.startDate} - ${exp.endDate})\n`;
+            if (exp.description) cv += `  ${exp.description}\n`;
+        });
+        cv += `\n`;
+    }
+
+    if (profile.education?.length) {
+        cv += `Education:\n`;
+        profile.education.forEach(edu => {
+            cv += `- ${edu.degree} in ${edu.field} at ${edu.school} (${edu.startDate} - ${edu.endDate})\n`;
+        });
+        cv += `\n`;
+    }
+
+    if (profile.skills?.length) {
+        cv += `Skills:\n${profile.skills.join(', ')}\n\n`;
+    }
+
+    return cv;
+}
+
+function getTemplateBase({ profile, customTemplate, job }) {
+    if (profile) {
+        console.log(chalk.blue('Using profile data as base CV'));
+        return profileToCV(profile);
+    }
     if (customTemplate) {
         console.log(chalk.blue('Using custom template'));
         return customTemplate;
     }
-    
+
     const polishJob = isPolish(job.snippet);
     const templatePath = path.join(
-        __dirname, 
-        'templates', 
+        __dirname,
+        'templates',
         polishJob ? 'polishCV.txt' : 'englishCV.txt'
     );
-    
+
     return fs.readFileSync(templatePath, 'utf-8');
 }
 
-async function generateCV(job, customTemplate = null, templateName = null) {
+async function generateCV(job, options = {}) {
+    const { profile, customTemplate, templateName } = options;
     const polishJob = isPolish(job.snippet);
-    const base = getTemplateBase(customTemplate, job);
+    const base = getTemplateBase({ profile, customTemplate, job });
     const language = polishJob ? 'polish' : 'english';
 
     console.log(chalk.blue(`Processing: ${job.title} at ${job.company} (${polishJob ? 'PL' : 'EN'})`));
 
-    // Save custom template if provided
     if (customTemplate && templateName) {
         const templateFilename = `${sanitizeFilename(templateName)}.txt`;
         const templatePath = path.join(CUSTOM_TEMPLATES_DIR, templateFilename);
@@ -232,33 +264,11 @@ async function generateCV(job, customTemplate = null, templateName = null) {
         console.log(chalk.blue(`Custom template saved: ${templateFilename}`));
     }
 
-    const prompt = polishJob 
-        ? `Dostosuj ponizsze CV do oferty pracy. Skup sie na doswiadczeniu, umiejetnosciach i projektach zwiazanych z wymaganiami. Zachowaj dokladnie ten sam format. CV w jezyku polskim.
-
-OFERTA PRACY:
-Stanowisko: ${job.title || 'Nie podano'}
-Firma: ${job.company || 'Nie podano'}
-Lokalizacja: ${job.location || 'Nie podano'}
-Wymagania: ${job.snippet || 'Brak wymagan'}
-
-CV DO DOSTOSOWANIA:
-${base}`
-        : `Customize the following CV for this job offer. Focus on experience, skills and projects related to the requirements. Keep exactly the same format. CV in English.
-
-JOB OFFER:
-Position: ${job.title || 'Not specified'}
-Company: ${job.company || 'Not specified'}
-Location: ${job.location || 'Not specified'}
-Requirements: ${job.snippet || 'No requirements'}
-
-CV TO CUSTOMIZE:
-${base}`;
+    const prompt = polishJob
+        ? `Dostosuj ponizsze CV do oferty pracy. Skup sie na doswiadczeniu, umiejetnosciach i projektach zwiazanych z wymaganiami. Zachowaj dokladnie ten sam format. CV w jezyku polskim.\n\nOFERTA PRACY:\nStanowisko: ${job.title}\nFirma: ${job.company}\nLokalizacja: ${job.location}\nWymagania: ${job.snippet}\n\nCV DO DOSTOSOWANIA:\n${base}`
+        : `Customize the following CV for this job offer. Focus on experience, skills and projects related to the requirements. Keep exactly the same format. CV in English.\n\nJOB OFFER:\nPosition: ${job.title}\nCompany: ${job.company}\nLocation: ${job.location}\nRequirements: ${job.snippet}\n\nCV TO CUSTOMIZE:\n${base}`;
 
     const generatedCV = await queryOllama(prompt, language);
-
-    if (!fs.existsSync(CV_DIR)) {
-        fs.mkdirSync(CV_DIR, { recursive: true });
-    }
 
     const txtFilename = `cv_${sanitizeFilename(job.company || job.title)}_${Date.now()}.txt`;
     const pdfFilename = txtFilename.replace('.txt', '.pdf');
@@ -266,16 +276,17 @@ ${base}`;
     fs.writeFileSync(path.join(CV_DIR, txtFilename), generatedCV);
     await generatePDF(generatedCV, path.join(CV_DIR, pdfFilename));
 
-    console.log(chalk.green(`CV saved to: ${txtFilename} and ${pdfFilename}`));
     return { ...job, cv: generatedCV, cv_filename: pdfFilename, cv_txt: txtFilename };
 }
 
-// Endpoint to get custom templates
+// -------------------- Endpoints --------------------
+
+// Templates endpoints
 app.get('/templates', (req, res) => {
     try {
         const templates = {};
         const files = fs.readdirSync(CUSTOM_TEMPLATES_DIR);
-        
+
         files.forEach(file => {
             if (file.endsWith('.txt')) {
                 const name = file.replace('.txt', '');
@@ -283,38 +294,36 @@ app.get('/templates', (req, res) => {
                 templates[name] = content;
             }
         });
-        
+
         res.json({ success: true, templates });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// Endpoint to save custom template
 app.post('/templates', (req, res) => {
     try {
         const { name, content } = req.body;
         if (!name || !content) {
             return res.status(400).json({ error: 'Name and content are required' });
         }
-        
+
         const filename = `${sanitizeFilename(name)}.txt`;
         const filepath = path.join(CUSTOM_TEMPLATES_DIR, filename);
         fs.writeFileSync(filepath, content);
-        
+
         res.json({ success: true, message: 'Template saved' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// Endpoint to delete custom template
 app.delete('/templates/:name', (req, res) => {
     try {
         const { name } = req.params;
         const filename = `${sanitizeFilename(name)}.txt`;
         const filepath = path.join(CUSTOM_TEMPLATES_DIR, filename);
-        
+
         if (fs.existsSync(filepath)) {
             fs.unlinkSync(filepath);
             res.json({ success: true, message: 'Template deleted' });
@@ -329,7 +338,7 @@ app.delete('/templates/:name', (req, res) => {
 // Search endpoint
 app.post('/search', async (req, res) => {
     try {
-        const { query, location, customTemplate, templateName } = req.body;
+        const { query, location, profile, customTemplate, templateName } = req.body;
         if (!query) {
             console.log(chalk.red('Query is required'));
             return res.status(400).json({ error: 'Query is required' });
@@ -349,7 +358,7 @@ app.post('/search', async (req, res) => {
 
         for (const job of jobs) {
             try {
-                const result = await generateCV(job, customTemplate, templateName);
+                const result = await generateCV(job, { profile, customTemplate, templateName });
                 results.push(result);
             } catch (err) {
                 console.log(chalk.yellow(`Skipping job due to error: ${err.message}`));
@@ -368,10 +377,10 @@ app.post('/search', async (req, res) => {
     }
 });
 
-// Serve CVs (static)
+// Serve CVs
 app.use('/cvs', express.static(CV_DIR));
 
-// Next.js handler for everything else
+// Next.js handler
 app.all('*', (req, res) => handle(req, res));
 
 // Start Server

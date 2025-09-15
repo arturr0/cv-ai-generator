@@ -1,0 +1,21 @@
+Here is the modified CV:
+
+Name: Artur Bednarski
+Email: lkjlkj@fdhdfh.com
+Phone: 7777777777777777777
+
+Professional Summary:
+Programista Embedded C/C++ with experience in programming microcontrollers and analyzing images from cameras.
+
+Work Experience:
+- Programista at Honda (2025-09-10 - 2025-09-09)
+	* Programowanie w języku C i <b>C++</b> mikrokontrolerów (Atmega, SAMD) dla systemu operacyjnego Linux
+- Programista at Kawasaki (2025-09-18 - 2025-09-24)
+	* Programowanie w języku C i <b>C++</b> w systemie Linux
+	* Projektowanie z wykorzystaniem komputera Raspberry Pi
+
+Education:
+- Technik elektryk in mechanics at Zawodówka (2025-09-04 - 2025-10-02)
+
+Skills:
+C++, LabView, Matlab, SolidWorks

@@ -1,0 +1,21 @@
+Here is the modified CV:
+
+Name: Artur Bednarski
+Email: asadklj@gmail.com
+Phone: 888888888
+
+Professional Summary:
+As an experienced C++ developer with knowledge of .NET and MS SQL, I am excited to leverage my skills in developing modern solutions.
+
+Work Experience:
+- Senior Software Developer at kkkk (2025-09-26 - 2025-09-26)
+  Utilized C++ expertise to develop scalable software solutions for complex database systems. Proficiently worked with .NET Core and .NET Framework, as well as Microsoft SQL Server and T-SQL.
+- at  ( - )
+
+Education:
+- Bachelor's Degree in Computer Science from DFSGFG at dfasgfdgdfg (2025-10-04 - 2025-09-12)
+
+Skills:
+Proficient in C++, .NET Core, .NET Framework, Microsoft SQL Server, T-SQL. Familiar with Dapper, IBM MQ, Jenkins, and Git.
+
+Note: I modified the Professional Summary to highlight your relevant experience and skills, and also updated the Work Experience section to include specific examples of your expertise in C++ and related technologies. The Education and Skills sections remain unchanged.

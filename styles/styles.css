@@ -1,0 +1,163 @@
+/* styles/styles.css */
+
+body {
+  background-color: #121212;
+  color: #e0e0e0;
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Layout */
+.container {
+  padding: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+h1, h2, h3 {
+  color: #ffffff;
+  margin-bottom: 12px;
+}
+
+h1 {
+  font-size: 28px;
+}
+
+/* Buttons */
+.button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-weight: 500;
+}
+
+.button-toggle {
+  background: #1e1e1e;
+  border: 1px solid #333;
+  color: #e0e0e0;
+}
+
+.button-toggle:hover {
+  background: #2c2c2c;
+}
+
+.button-primary {
+  background: #4CAF50;
+  color: #fff;
+}
+
+.button-primary:disabled {
+  background: #2e7d32;
+  cursor: not-allowed;
+}
+
+.button-danger {
+  background: #b71c1c;
+  color: #fff;
+}
+
+.button-secondary {
+  background: #2c2c2c;
+  color: #e0e0e0;
+}
+
+/* Forms */
+input, textarea {
+  width: 100%;
+  padding: 8px;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #e0e0e0;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #777;
+}
+
+label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+  color: #bbb;
+}
+
+/* Sections */
+.profile-builder {
+  margin-bottom: 24px;
+  padding: 20px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #1a1a1a;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.card {
+  border: 1px solid #333;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  background: #1b1b1b;
+}
+
+/* Skill tags */
+.skill-tag {
+  background: #2c2c2c;
+  padding: 4px 8px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.skill-tag button {
+  background: none;
+  border: none;
+  color: #bbb;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.skill-tag button:hover {
+  color: #fff;
+}
+
+/* Results */
+.results-list {
+  list-style: none;
+  padding: 0;
+}
+
+.result-item {
+  border: 1px solid #333;
+  padding: 16px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  background: #1b1b1b;
+}
+
+.result-item a {
+  color: #64b5f6;
+  text-decoration: none;
+}
+
+.result-item a:hover {
+  text-decoration: underline;
+}
+
+/* Messages */
+.warning {
+  color: #ff9800;
+  margin-bottom: 16px;
+}
+
+.error {
+  color: #f44336;
+  margin-bottom: 16px;
+}
