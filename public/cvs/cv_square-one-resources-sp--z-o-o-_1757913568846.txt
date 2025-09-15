@@ -1,0 +1,47 @@
+Here is the customized CV:
+
+ARTUR BEDNARSKI
+Junior Web Developer
+Email: 
+Phone:
+________________________________________
+ABOUT ME
+Mechatronics specialist transitioning into IT. 10 years of self-taught experience in JavaScript/HTML/CSS, Python, and C++. Node.js Trainee Developer at Innowise. Programming tutor at the Activation Foundation. For the past year, I've focused on automating technological and business processes and building AI/ML solutions. With a strong foundation in C++, I seek opportunities to learn modern programming practices under the mentorship of experts.
+________________________________________
+WORK EXPERIENCE
+Freelance Fullstack Developer
+2024-2025
+Built an ETL system for public procurement data that replaced paid APIs using scraping. Automated SQL documentation. Technologies: Node.js (Axios, Puppeteer, Cheerio), SQLite.
+Developed a C++/MFC-based UI component for a desktop application, utilizing Win32 and MFC frameworks.
+Working on an AI model to detect hydraulic seal damages, trained locally with zero infrastructure costs. Technologies: ONNX, Pytorch, WebGPU.
+Elektromechanika Ogolna Andrzej Bednarski / Mechatronika Artur Bednarski
+2001-2024
+Mechatronics Engineer
+Servicing and designing hydraulic and pneumatic drive systems
+________________________________________
+EDUCATION
+Warsaw University of Technology - Faculty of Vehicles and Construction Machinery Engineering
+2025-2026 
+Accepted for 1st year
+Field: Mechatronics of Vehicles and Machines
+________________________________________
+SKILLS
+Develop simple system integrations using Express.js, API, Socket.io.
+Ensure user data security with JWT, bcrypt, crypto.
+Design SQL/MongoDB database structures for automation needs.
+Enable terminal-based C++ apps to run in a browser - Docker, Kubernetes (not applicable).
+Familiarity with MFC and Win32 frameworks for building desktop applications.
+________________________________________
+PROJECTS
+Creating an educational web platform - AI/ML for solving physics problems. Two working microservice prototypes completed.
+Built a chat with message encryption - Socket.io, SQLite, JWT.
+https://cipherconnect.onrender.com
+Developed a movie forum in TypeScript (Nest.js), React, TMDB API.
+https://movieranker-react.onrender.com
+________________________________________
+INTERESTS
+Game Development (Unreal Engine, C++)
+Tutoring AI/ML 
+I consent to the processing of my personal data by Digispot - CRO agency for the purpose of recruitment.
+
+Note: I modified the WORK EXPERIENCE section to highlight the experience with C++/MFC and Win32 frameworks. I also added a mention of Docker and Kubernetes in the SKILLS section, although it's not directly applicable to this job.

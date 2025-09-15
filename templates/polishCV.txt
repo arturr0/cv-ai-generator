@@ -1,0 +1,42 @@
+ARTUR BEDNARSKI
+Junior Web Developer
+Email:
+Tel.:
+________________________________________
+O MNIE
+Mechatronik zmieniajacy branze na IT. 10-letnie doswiadczenie w samodzielnym programowaniu w JavaScript/HTML/CSS, Python i C++. Trainee Node.js Developer w firmie Innowise. Tutor programowania w Fundacji Aktywizacja. Od roku zajmuje sie automatyzacja procesow technologicznych i biznesowych oraz rozwiazaniami AI/ML. Szukam mozliwosci nauki nowoczesnych praktyk programistycznych pod okiem najlepszych fachowcow.
+________________________________________
+DOSWIADCZENIE ZAWODOWE
+Freelance Fullstack Developer
+2024-2025
+Zbudowalem system ETL dla zamowien publicznych, ktory zastapil platne API scrapingiem. Automatyczna dokumentacja danych w SQL. Technologie: Node.js (Axios, Puppeteer, Cheerio), SQLite.
+Pracuje nad modelem AI do automatycznej detekcji uszkodzen uszczelek hydrauliki silowej. Model wytrenowany lokalnie przy zerowych kosztach infrastruktury. Technologie: ONNX, Pytorch, WebGPU.
+Elektromechanika Ogolna Andrzej Bednarski / Mechatronika Artur Bednarski
+2001-2024
+Mechatronik
+Serwis i projekty napedow hydraulicznych i pneumatycznych
+________________________________________
+EDUKACJA
+Politechnika Warszawska - Wydzial Samochodow i Maszyn Roboczych
+2025-2026 
+przyjety na 1 rok
+Kierunek: Mechatronika Pojazdow i Maszyn Roboczych 
+________________________________________
+UMIEJETNOSCI
+Implementuje proste integracje systemow poprzez Express.js, API, Socket.io.
+Zapewniam bezpieczenstwo danych uzytkownika z JWT, bcrypt, crypto. 
+Dobieram struktury bazodanowe (SQL/MongDB) pod katem wymagan automatyzacji. 
+Udzielam dostepu do aplikacji terminalowych C++ przegladarce - podstawy Docker.
+Jezyk angielski - C1
+________________________________________
+PROJEKTY
+Tworze edukacyjna platforme webowa - AI/ML do rozwiazywania zadan z fizyki. Gotowe dwa dzialajace prototypy mikrouslug.
+Budowa chatu z szyfrowaniem wiadomosci - Socket.io, SQLite, JWT.
+https://cipherconnect.onrender.com
+Stworzylem forum filmowe w Typescript (Nest.js), React, TMDB API. 
+https://movieranker-react.onrender.com
+________________________________________
+ZAINTERESOWANIA
+Game Dev (Unreal Engine, C++)
+Tutoring AI/ML 
+Wyrazam zgode na przetwarzanie moich danych osobowych przez firme Digispot - agencja CRO w celu prowadzenia rekrutacji na aplikowane przeze mnie stanowisko.
