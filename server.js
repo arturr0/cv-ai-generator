@@ -23,9 +23,11 @@ const PORT = process.env.PORT || 3000;
 // Constants
 const JOOBLE_API_URL = 'https://pl.jooble.org/api';
 const CV_DIR = path.join(__dirname, 'public', 'cvs');
+const CUSTOM_TEMPLATES_DIR = path.join(__dirname, 'templates', 'custom');
 
-// Ensure CV dir
+// Ensure directories exist
 if (!fs.existsSync(CV_DIR)) fs.mkdirSync(CV_DIR, { recursive: true });
+if (!fs.existsSync(CUSTOM_TEMPLATES_DIR)) fs.mkdirSync(CUSTOM_TEMPLATES_DIR, { recursive: true });
 
 await appNext.prepare();
 const app = express();
@@ -199,14 +201,36 @@ async function getJoobleJobs(params) {
     }
 }
 
-async function generateCV(job) {
+function getTemplateBase(customTemplate, job) {
+    if (customTemplate) {
+        console.log(chalk.blue('Using custom template'));
+        return customTemplate;
+    }
+    
     const polishJob = isPolish(job.snippet);
-    const base = polishJob
-        ? fs.readFileSync(path.join(__dirname, 'templates', 'polishCV.txt'), 'utf-8')
-        : fs.readFileSync(path.join(__dirname, 'templates', 'englishCV.txt'), 'utf-8');
+    const templatePath = path.join(
+        __dirname, 
+        'templates', 
+        polishJob ? 'polishCV.txt' : 'englishCV.txt'
+    );
+    
+    return fs.readFileSync(templatePath, 'utf-8');
+}
+
+async function generateCV(job, customTemplate = null, templateName = null) {
+    const polishJob = isPolish(job.snippet);
+    const base = getTemplateBase(customTemplate, job);
     const language = polishJob ? 'polish' : 'english';
 
     console.log(chalk.blue(`Processing: ${job.title} at ${job.company} (${polishJob ? 'PL' : 'EN'})`));
+
+    // Save custom template if provided
+    if (customTemplate && templateName) {
+        const templateFilename = `${sanitizeFilename(templateName)}.txt`;
+        const templatePath = path.join(CUSTOM_TEMPLATES_DIR, templateFilename);
+        fs.writeFileSync(templatePath, customTemplate);
+        console.log(chalk.blue(`Custom template saved: ${templateFilename}`));
+    }
 
     const prompt = polishJob 
         ? `Dostosuj ponizsze CV do oferty pracy. Skup sie na doswiadczeniu, umiejetnosciach i projektach zwiazanych z wymaganiami. Zachowaj dokladnie ten sam format. CV w jezyku polskim.
@@ -246,10 +270,66 @@ ${base}`;
     return { ...job, cv: generatedCV, cv_filename: pdfFilename, cv_txt: txtFilename };
 }
 
-// Endpoint
+// Endpoint to get custom templates
+app.get('/templates', (req, res) => {
+    try {
+        const templates = {};
+        const files = fs.readdirSync(CUSTOM_TEMPLATES_DIR);
+        
+        files.forEach(file => {
+            if (file.endsWith('.txt')) {
+                const name = file.replace('.txt', '');
+                const content = fs.readFileSync(path.join(CUSTOM_TEMPLATES_DIR, file), 'utf-8');
+                templates[name] = content;
+            }
+        });
+        
+        res.json({ success: true, templates });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Endpoint to save custom template
+app.post('/templates', (req, res) => {
+    try {
+        const { name, content } = req.body;
+        if (!name || !content) {
+            return res.status(400).json({ error: 'Name and content are required' });
+        }
+        
+        const filename = `${sanitizeFilename(name)}.txt`;
+        const filepath = path.join(CUSTOM_TEMPLATES_DIR, filename);
+        fs.writeFileSync(filepath, content);
+        
+        res.json({ success: true, message: 'Template saved' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Endpoint to delete custom template
+app.delete('/templates/:name', (req, res) => {
+    try {
+        const { name } = req.params;
+        const filename = `${sanitizeFilename(name)}.txt`;
+        const filepath = path.join(CUSTOM_TEMPLATES_DIR, filename);
+        
+        if (fs.existsSync(filepath)) {
+            fs.unlinkSync(filepath);
+            res.json({ success: true, message: 'Template deleted' });
+        } else {
+            res.status(404).json({ error: 'Template not found' });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Search endpoint
 app.post('/search', async (req, res) => {
     try {
-        const { query, location } = req.body;
+        const { query, location, customTemplate, templateName } = req.body;
         if (!query) {
             console.log(chalk.red('Query is required'));
             return res.status(400).json({ error: 'Query is required' });
@@ -269,7 +349,7 @@ app.post('/search', async (req, res) => {
 
         for (const job of jobs) {
             try {
-                const result = await generateCV(job);
+                const result = await generateCV(job, customTemplate, templateName);
                 results.push(result);
             } catch (err) {
                 console.log(chalk.yellow(`Skipping job due to error: ${err.message}`));
