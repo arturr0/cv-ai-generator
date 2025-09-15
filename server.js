@@ -100,7 +100,14 @@ async function queryOllama(prompt, retries = 3) {
         const messages = [
             {
                 role: "system",
-                content: "You are a professional CV customizer. Create a well-formatted CV in English. Focus on experience, skills and projects related to the job requirements. Use clear sections and professional language."
+                content: `You are a professional CV writer. Create a well-formatted CV in English with these guidelines:
+1. Use clear section headers in bold
+2. Add proper spacing between sections
+3. Do not use asterisks (*) for bullet points
+4. Focus on relevant experience and skills for the job
+5. Use professional language
+6. Format dates consistently (e.g., September 2023 - Present)
+7. Keep the CV concise and targeted to the specific job`
             },
             {
                 role: "user",
@@ -235,7 +242,15 @@ async function generateCV(job, profile) {
 
     const baseCV = profileToCV(profile);
     
-    const prompt = `Create a professional CV tailored for this specific job opportunity. Use the candidate's profile information below and emphasize the skills and experiences most relevant to this position.
+    const prompt = `Create a professional CV tailored for this specific job opportunity. 
+
+IMPORTANT FORMATTING RULES:
+1. Use bold text for section headers (like **PROFESSIONAL SUMMARY**)
+2. Add proper spacing between sections
+3. Do NOT use asterisks (*) for bullet points
+4. Use proper line breaks and spacing for readability
+5. Format dates consistently (Month Year format)
+6. Focus on the most relevant experiences and skills
 
 JOB OPPORTUNITY:
 Position: ${job.title || 'Not specified'}
@@ -246,9 +261,18 @@ Requirements: ${job.snippet || 'No specific requirements provided'}
 CANDIDATE PROFILE:
 ${baseCV}
 
-IMPORTANT: Create a well-formatted CV in English. Focus on the most relevant experiences and skills for this specific job. Use clear section headers and professional language.`;
+Create a well-formatted CV that highlights the candidate's qualifications for this specific role.`;
 
     const generatedCV = await queryOllama(prompt);
+
+    // Clean up the generated CV
+    let cleanedCV = generatedCV
+        .replace(/\*\*/g, '') // Remove all ** used for bold
+        .replace(/\*/g, '')   // Remove all asterisks
+        .replace(/Here is a professionally formatted CV[^:]*:/, '') // Remove introductory text
+        .replace(/As you can see[^]*$/m, '') // Remove concluding text
+        .replace(/\n{3,}/g, '\n\n') // Limit consecutive newlines to 2
+        .trim();
 
     // Ensure CV directory exists
     if (!fs.existsSync(CV_DIR)) {
@@ -259,11 +283,11 @@ IMPORTANT: Create a well-formatted CV in English. Focus on the most relevant exp
     const pdfFilename = txtFilename.replace('.txt', '.pdf');
 
     // Save text version
-    fs.writeFileSync(path.join(CV_DIR, txtFilename), generatedCV);
+    fs.writeFileSync(path.join(CV_DIR, txtFilename), cleanedCV);
     
     // Generate PDF
     try {
-        await generatePDF(generatedCV, path.join(CV_DIR, pdfFilename));
+        await generatePDF(cleanedCV, path.join(CV_DIR, pdfFilename));
         console.log(chalk.green(`PDF generated: ${pdfFilename}`));
     } catch (err) {
         console.log(chalk.yellow(`PDF generation failed: ${err.message}, using text version only`));
@@ -272,7 +296,7 @@ IMPORTANT: Create a well-formatted CV in English. Focus on the most relevant exp
 
     return { 
         ...job, 
-        cv: generatedCV, 
+        cv: cleanedCV, 
         cv_filename: pdfFilename, 
         cv_txt: txtFilename 
     };

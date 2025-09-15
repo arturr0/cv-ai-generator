@@ -1,0 +1,39 @@
+Here is a well-formatted CV tailored to the C++ Developer position at Quod Financial:
+
+PROFESSIONAL SUMMARY
+Highly motivated and detail-oriented Mechatronics Technician with experience in team management, control system design, and software development. Proficient in C++, LabView, and MATLAB.
+
+WORK EXPERIENCE
+
+Lead Engineer at Kawasaki, Warszawa
+September 25, 2025 - October 12, 2025
+
+ Managed a team of engineers to ensure project deadlines were met
+ Coordinated with cross-functional teams to design and develop innovative solutions
+
+Engine Specialist at Honda, Warszawa
+September 1, 2025 - October 11, 2025
+
+ Designed control systems for various applications using C++ programming language
+ Collaborated with engineers to optimize system performance and reliability
+
+EDUCATION
+
+Technician in Mechatronics at Techniciam School, Warszawa
+September 5, 2025 - October 12, 2025
+
+ Gained a solid foundation in mechatronics principles and practices
+ Developed skills in programming languages such as C++, LabView, and MATLAB
+
+SKILLS & COMPETENCIES
+
+ Programming languages: C++, LabView, MATLAB
+ Operating Systems: Linux, Windows
+ Strong understanding of software development life cycles and Agile methodologies
+ Excellent problem-solving and analytical skills
+ Effective communication and team management abilities
+
+CONTACT INFORMATION
+Name: Artur Bednarski
+Email: [kljlkj@lkjlkjlk.gmail.com](mailto:kljlkj@lkjlkjlk.gmail.com)
+Phone: 897876875

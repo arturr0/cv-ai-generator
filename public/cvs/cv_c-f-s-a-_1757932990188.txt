@@ -1,0 +1,28 @@
+Here is a well-formatted CV tailored to the Senior Python Developer position at C&F S.A.:
+
+PROFESSIONAL SUMMARY
+Highly motivated and detail-oriented mechatronics technician with experience in team management, control system design, and technical training. Proficient in programming languages such as C++ and eager to leverage my skills in Python development.
+
+WORK EXPERIENCE
+
+Lead Engineer at Kawasaki (2025-09-25 - 2025-10-12)
+
+ Managed a team of engineers, ensuring efficient project execution and meeting deadlines
+ Coordinated with cross-functional teams to resolve technical issues and improve processes
+
+Engine Specialists at Honda (2025-09-01 - 2025-10-11)
+
+ Designed and developed control systems for various applications
+ Collaborated with colleagues to troubleshoot and optimize system performance
+
+EDUCATION
+
+Technician in Mechatronics at Techniciam School (2025-09-05 - 2025-10-12)
+
+ Gained comprehensive knowledge of mechatronics principles, including electronics, mechanics, and programming
+
+SKILLS & COMPETENCIES
+
+ Programming languages: C++, Python
+ Technical skills: LabView, MATLAB
+ Strong understanding of object-oriented programming concepts

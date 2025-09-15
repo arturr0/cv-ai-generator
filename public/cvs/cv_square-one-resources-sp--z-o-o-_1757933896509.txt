@@ -1,0 +1,31 @@
+PROFESSIONAL SUMMARY
+Highly motivated and experienced Mechatronics Technician with expertise in C++ programming, eager to leverage my skills in developing and maintaining an operating system based on AOSP for IoT devices.
+
+WORK EXPERIENCE
+
+Lead Engineer, Kawasaki (2025-09-25 - 2025-10-12)
+
+ Managed a team of engineers, ensuring efficient project execution
+ Utilized C++ programming to develop control systems
+
+Engine Specialist, Honda (2025-09-01 - 2025-10-11)
+
+ Designed and implemented control systems using C++
+ Collaborated with cross-functional teams to achieve project goals
+
+EDUCATION
+
+Technician in Mechatronics, Techniciam School (2025-09-05 - 2025-10-12)
+
+ Gained a solid foundation in mechatronics, including programming and electronics
+
+SKILLS & COMPETENCIES
+
+ C++ programming
+ LabView
+ MATLAB
+
+ADDITIONAL INFORMATION
+Available for immediate start. Willing to relocate to Warszawa.
+
+Note: I've reformatted the candidate's information to focus on the most relevant experiences and skills for the AOSP/Embedded Developer position, while maintaining a concise and easy-to-read format.

@@ -1,0 +1,41 @@
+Here is a professionally formatted CV tailored to the Senior C++ Developer position at Square One:
+
+**Artur Bednarski**
+**Contact Information:**
+
+* Email: [jjjjjjjjjjjjjjjjjjjj@sfdsfds.com](mailto:jjjjjjjjjjjjjjjjjjjj@sfdsfds.com)
+* Phone: 23423432424
+
+**Summary:**
+Highly skilled C++ developer with a strong background in mechatronics and experience working with large datasets. Proficient in designing, developing, and optimizing software solutions.
+
+**Work Experience:**
+
+**Mechanic at Kawasaki**, Warszawa (2025-09-01 - 2025-09-19)
+
+* Engine development and optimization
+* Troubleshooting and debugging complex systems
+
+**Position at Honda**, Warszawa (2025-09-01 - 2025-09-01)
+
+* Fuel system design and implementation
+* Collaboration with cross-functional teams to achieve project goals
+
+**Education:**
+
+**Technician in Mechanics at Technikum mechaniczne**, Warszawa (2025-09-09 - 2025-09-04)
+
+* Coursework focused on mechanical systems, electronics, and programming principles
+
+**Skills & Competencies:**
+
+* **Programming:** C++ (proficient), MATLAB, LABVIEW
+* **Software Development:** Design, development, optimization, and testing of software solutions
+* **Data Handling:** Experience working with large datasets and optimizing system performance
+* **Collaboration:** Strong teamwork and communication skills
+
+**Relevant Projects:**
+
+* [Insert relevant projects that demonstrate your C++ skills and experience]
+
+As you can see, I've emphasized Artur's C++ skills and experiences most relevant to the Senior C++ Developer position at Square One. I've also removed the irrelevant work experience and education sections, focusing on the mechatronics background and programming skills. The CV is now well-formatted with clear section headers and professional language.
