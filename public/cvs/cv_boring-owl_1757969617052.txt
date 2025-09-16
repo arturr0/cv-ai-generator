@@ -1,0 +1,29 @@
+PROFESSIONAL SUMMARY
+Highly motivated and detail-oriented full-stack developer with a strong background in mechatronics, seeking to leverage my skills in JavaScript frameworks to drive innovation in a dynamic environment.
+
+WORK EXPERIENCE
+
+Full-Stack Developer, Mechatronika Artur Bednarski (2016-01-15 - 2024-01-15)
+
+ Maintained and improved hydraulic and pneumatic drives systems, developing problem-solving skills and attention to detail
+
+EDUCATION
+
+Engineer in Mechatronics, Warsaw University of Technology (2025-10-15 - 2029-01-15)
+
+ Gained a solid foundation in mechatronic principles, with a focus on electronics, mechanics, and control systems
+
+SKILLS & COMPETENCIES
+
+ JavaScript: proficient in modern JavaScript frameworks and libraries
+ C++: experienced in developing software applications using C++
+ Python: familiar with the Python programming language and its applications
+ Problem-solving skills: able to analyze complex problems and develop effective solutions
+
+CONTACT INFORMATION
+
+Name: Artur Bednarski
+Email: [a.bednarski@onet.pl](mailto:a.bednarski@onet.pl)
+Phone: 345678900
+
+I hope this CV meets your requirements! Let me know if you need any further adjustments.
