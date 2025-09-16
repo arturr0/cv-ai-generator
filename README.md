@@ -2,7 +2,7 @@
 
 A modern, AI-powered application that automates the job application process by generating tailored CVs for specific job opportunities. Users build a comprehensive professional profile once, and the application searches the Jooble job API based on their queries, retrieves relevant positions, and utilizes a local Ollama AI model to craft personalized, well-formatted CVs that highlight the most relevant skills and experiences for each role, finally presenting them as downloadable PDFs alongside the original job listings for a streamlined and efficient application workflow.
 
-![App Screenshot](path/to/your/image.png)
+![App Screenshot](https://artur-bednarski.onrender.com/public/images/cv2.png)
 
 ![Next.js](https://img.shields.io/badge/Next.js-13%2B-black.svg?logo=next.js&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)
