@@ -66,20 +66,7 @@ Start the development server:
 | DELETE | /templates/:name   | Delete a template                |
 | GET    | /cvs/:filename     | Download generated CVs           |
 
-## Project Structure
 
-    cv-generator/
-    ├── server.js              # Express server with API endpoints
-    ├── components/
-    │   └── Home.js            # Main React component
-    ├── utils/
-    │   └── pdf.js             # PDF generation utility
-    ├── public/
-    │   └── cvs/               # Generated CV storage
-    ├── templates/
-    │   └── custom/            # Custom CV templates
-    └── styles/
-        └── styles.css         # Modern CSS styling
 
 ## Requirements
 
